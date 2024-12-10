@@ -30,19 +30,12 @@ const getTinyGlobby = memoize(() =>
   require("tinyglobby"),
 );
 
-const getGlobby = memoize(async () => {
-  // @ts-ignore
-  const { globby } = await import("globby");
-
-  return globby;
-});
-
 /** @typedef {import("schema-utils/declarations/validate").Schema} Schema */
 /** @typedef {import("webpack").Compiler} Compiler */
 /** @typedef {import("webpack").Compilation} Compilation */
 /** @typedef {import("webpack").WebpackError} WebpackError */
 /** @typedef {import("webpack").Asset} Asset */
-/** @typedef {import("globby").Options} GlobbyOptions */
+/** @typedef {import("tinyglobby").GlobOptions} GlobbyOptions */
 /** @typedef {ReturnType<Compilation["getLogger"]>} WebpackLogger */
 /** @typedef {ReturnType<Compilation["getCache"]>} CacheFacade */
 /** @typedef {ReturnType<ReturnType<Compilation["getCache"]>["getLazyHashedEtag"]>} Etag */
@@ -267,7 +260,7 @@ class CopyPlugin {
 
   /**
    * @private
-   * @param {typeof import("globby").globby} globby
+   * @param {typeof import("tinyglobby").glob} globby
    * @param {Compiler} compiler
    * @param {Compilation} compilation
    * @param {WebpackLogger} logger
@@ -342,7 +335,6 @@ class CopyPlugin {
       followSymbolicLinks: true,
       ...(pattern.globOptions || {}),
       cwd: pattern.context,
-      objectMode: false,
       onlyFiles: true,
     };
 
@@ -815,7 +807,7 @@ class CopyPlugin {
       const cache = compilation.getCache("CopyWebpackPlugin");
 
       /**
-       * @type {typeof import("globby").globby}
+       * @type {typeof import("tinyglobby").glob}
        */
       let globby;
 
@@ -827,7 +819,7 @@ class CopyPlugin {
         async (unusedAssets, callback) => {
           if (typeof globby === "undefined") {
             try {
-              globby = await getGlobby();
+              globby = await getTinyGlobby().glob;
             } catch (error) {
               callback(/** @type {Error} */ (error));
 
