@@ -333,6 +333,7 @@ class CopyPlugin {
     /** @type {GlobbyOptions} */
     const globOptions = {
       followSymbolicLinks: true,
+      absolute: true,
       ...(pattern.globOptions || {}),
       cwd: pattern.context,
       onlyFiles: true,
